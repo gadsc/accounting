@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.gadsc.accounting.infra.AccountingEntryRequestError;
 import br.com.gadsc.accounting.statistics.AccountingEntryStatistics;
 
 @RestController()
@@ -44,7 +45,7 @@ public class AccountingEntryController {
 		Optional<AccountingEntry> accountingEntry = entries.getByUUID(uuid);
 		
 		if (!accountingEntry.isPresent()) {
-			return new ResponseEntity<>("Conta contábil não encontrada pelo id informado.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new AccountingEntryRequestError("Conta contábil não encontrada pelo id informado."), HttpStatus.NOT_FOUND);
 		}
 		
 		return new ResponseEntity<>(accountingEntry, HttpStatus.OK);
@@ -57,7 +58,7 @@ public class AccountingEntryController {
 		List<AccountingEntry> accountingEntries = entries.getByAccountNumber(accountNumber);
 		
 		if (accountingEntries.isEmpty()) {
-			return new ResponseEntity<>("Nenhuma conta contábil foi encontrada pelo número informado.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new AccountingEntryRequestError("Nenhuma conta contábil foi encontrada pelo número informado."), HttpStatus.NOT_FOUND);
 		}
 		
 		return new ResponseEntity<>(accountingEntries, HttpStatus.OK);
@@ -76,7 +77,7 @@ public class AccountingEntryController {
 		}
 
 		if (accountingEntries.isEmpty()) {
-			return new ResponseEntity<>("Não foi possível calcular as estáticas pois não há nenhuma conta contábil cadastrada.", HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>(new AccountingEntryRequestError("Não foi possível calcular as estáticas pois não há nenhuma conta contábil cadastrada."), HttpStatus.FORBIDDEN);
 		}
 		
 		return new ResponseEntity<>(AccountingEntryStatistics.statsOf(accountingEntries).generateStatistics(), HttpStatus.OK);
