@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountingEntries {
+class AccountingEntries {
 	
 	private final Map<UUID, AccountingEntry> entries = new ConcurrentHashMap<>();
 	private final Map<Long, List<UUID>> keys = new ConcurrentHashMap<>();
