@@ -40,29 +40,32 @@ public class AccountingEntryController {
 
 	@GetMapping(path = "/lancamentos-contabeis/{uuid}")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<Object> getById(@PathVariable UUID uuid) {
 		Optional<AccountingEntry> accountingEntry = entries.getByUUID(uuid);
 		
-		if (accountingEntry.isPresent()) {
-			return new ResponseEntity<>(accountingEntry, HttpStatus.OK);
-		} else {
+		if (!accountingEntry.isPresent()) {
 			return new ResponseEntity<>("Conta contábil não encontrada pelo id informado.", HttpStatus.NOT_FOUND);
 		}
+		
+		return new ResponseEntity<>(accountingEntry, HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/lancamentos-contabeis")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public List<AccountingEntry> getByAccountNumber(
+	public ResponseEntity<Object> getByAccountNumber(
 			@RequestParam(name = "contaContabil", required = false) Long accountNumber) {
-		return entries.getByAccountNumber(accountNumber);
+		List<AccountingEntry> accountingEntries = entries.getByAccountNumber(accountNumber);
+		
+		if (accountingEntries.isEmpty()) {
+			return new ResponseEntity<>("Nenhuma conta contábil foi encontrada pelo número informado.", HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<>(accountingEntries, HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/lancamentos-contabeis/_stats")
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public AccountingEntryStatistics getStats(
+	public ResponseEntity<Object> getStats(
 			@RequestParam(name = "contaContabil", required = false) Long accountNumber) {
 		List<AccountingEntry> accountingEntries;
 
@@ -73,10 +76,10 @@ public class AccountingEntryController {
 		}
 
 		if (accountingEntries.isEmpty()) {
-			return AccountingEntryStatistics.createDefault();
+			return new ResponseEntity<>("Não foi possível calcular as estáticas pois não há nenhuma conta contábil cadastrada.", HttpStatus.FORBIDDEN);
 		}
 		
-		return AccountingEntryStatistics.statsOf(accountingEntries).generateStatistics();
+		return new ResponseEntity<>(AccountingEntryStatistics.statsOf(accountingEntries).generateStatistics(), HttpStatus.OK);
 	}
  
 }
