@@ -1,4 +1,4 @@
-# Projeto que cria e armazena lançamentos contábeis sem usar SQL
+# Projeto que cria e armazena lançamentos contábeis
 
 ## Setup
 - Para inicilizar o projeto basta ir na raiz do projeto e executar um `mvn spring-boot:run`
