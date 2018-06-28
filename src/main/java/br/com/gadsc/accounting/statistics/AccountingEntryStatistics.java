@@ -1,5 +1,6 @@
 package br.com.gadsc.accounting.statistics;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,10 +17,10 @@ public class AccountingEntryStatistics {
 	private final Double max;
 	@JsonProperty("media")
 	private final Double avg;
-	@JsonProperty("quantidade")
+	@JsonProperty("qtde")
 	private final Long quantity;
-	
-	private AccountingEntryStatistics(Double sum, Double min, Double max, Double avg, Long quantity) {
+
+	public AccountingEntryStatistics(Double sum, Double min, Double max, Double avg, Long quantity) {
 		this.sum = sum;
 		this.min = min;
 		this.max = max;
@@ -50,15 +51,11 @@ public class AccountingEntryStatistics {
 	public Long getQuantity() {
 		return quantity;
 	}
-	
-	public static AccountingEntryStatistics createDefault() {
-		return new AccountingEntryStatistics(0d,0d,0d,0d,0l);
-	}
-	
+
 	public static StatisticsBuilder statsOf(List<AccountingEntry> entries) {
 		return new StatisticsBuilder(entries);
 	}
-	
+
 	public static final class StatisticsBuilder {
 		private final List<Double> entriesValue;
 		private Double sum;
@@ -68,7 +65,11 @@ public class AccountingEntryStatistics {
 		private long quantity;
 
 		private StatisticsBuilder(List<AccountingEntry> entries) {
-			this.entriesValue = entries.stream().map(AccountingEntry::getValue).collect(Collectors.toList());
+			if (entries != null && !entries.isEmpty()) {
+				this.entriesValue = entries.stream().map(AccountingEntry::getValue).collect(Collectors.toList());
+			} else {
+				this.entriesValue = new ArrayList<>();
+			}
 		}
 
 		private StatisticsBuilder withSum() {
@@ -95,8 +96,12 @@ public class AccountingEntryStatistics {
 			this.quantity = entriesValue.size();
 			return this;
 		}
-		
+
 		public AccountingEntryStatistics generateStatistics() {
+			if (entriesValue.isEmpty()) {
+				return new AccountingEntryStatistics(0d, 0d, 0d, 0d, 0l);
+			}
+
 			return new AccountingEntryStatistics(this.withSum().withMin().withMax().withAvg().withQuantity());
 		}
 	}

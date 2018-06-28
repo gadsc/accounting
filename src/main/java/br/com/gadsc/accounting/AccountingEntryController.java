@@ -22,21 +22,22 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.gadsc.accounting.infra.AccountingEntryRequestError;
 import br.com.gadsc.accounting.statistics.AccountingEntryStatistics;
 
-@RestController()
+@RestController
 public class AccountingEntryController {
 
-	private final AccountingEntries entries;
-
 	@Autowired
-	AccountingEntryController(AccountingEntries entries) {
-		this.entries = entries;
-	}
+	private AccountingEntries entries;
 
+//	@Autowired
+//	AccountingEntryController(AccountingEntries entries) {
+//		this.entries = entries;
+//	}
+	
 	@PostMapping(path = "/lancamentos-contabeis", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
-	public UUID create(@Valid @RequestBody AccountingEntry accountingEntry) {
-		return entries.insert(accountingEntry);
+	public CreatedAccountingEntry create(@Valid @RequestBody AccountingEntry accountingEntry) {
+		return new CreatedAccountingEntry(entries.insert(accountingEntry));
 	}
 
 	@GetMapping(path = "/lancamentos-contabeis/{uuid}")

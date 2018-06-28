@@ -47,11 +47,15 @@ class AccountingEntries {
 	
 	public List<AccountingEntry> getByAccountNumber(Long accountNumber) {
 		if (keys.containsKey(accountNumber)) {
-			return keys.get(accountNumber).stream()
+			return Collections.unmodifiableList(keys.get(accountNumber).stream()
 					.map(uuid -> entries.get(uuid))
-					.collect(Collectors.toList());
+					.collect(Collectors.toList()));
 		}
 		
 		return Collections.emptyList();
+	}
+	
+	public Map<Long, List<UUID>> getKeys() {
+		return Collections.unmodifiableMap(keys);
 	}
 }
